@@ -15,6 +15,5 @@ class TestStringMethods(unittest.TestCase):
         obj2 = cv2.imencode('.jpg', cv2.imread('test-template.png'))[1].tobytes()
         self.assertEqual(obj1, obj2)
 
-        
 if __name__ == '__main__':
     unittest.main()

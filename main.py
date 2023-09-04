@@ -11,10 +11,8 @@ def make_lines(string):
             result += f"&&& {word}"
         else:
             result += f'{word} '
-
     return result.split('&&&')
     
-
 def make_bg(color):
     height, width, channel = 1080, 1080, 3
     red, green, blue = color
@@ -29,39 +27,34 @@ if __name__ == "__main__":
     '''
     print(description)
 
-    slide = int(input('slide number: '))
-
-    bg_color = input('enter bg color (R,G,B) ==> ').replace('(', '').replace(')', '').split(',')
+    slide = 1
+    bg_color = input('enter bg color (R,G,B) default(255, 255, 255) ==> ').replace('(', '').replace(')', '').split(',')
     bg_color = bg_color if len(bg_color) == 3 else (255, 255, 255)
     bg_color = tuple([int(i) for i in bg_color])
     make_bg(bg_color)
+
     while input('continue (y/n)? ') == 'y':
         print('-'*20)
-        # Open the Template
         image = Image.open("template.png")
 
-        # Create a drawing object
         draw = ImageDraw.Draw(image)
 
-        # Define the text to be added
         title = input("Your Title: ")
         lines = input("Your Text: ")
-        if "&&&" in lines:
-            lines = lines.split('&&&')
+
+        if "\n" in lines:
+            lines = lines.split('\n')
         else:
             lines = make_lines(lines)
 
-        # Specify the font and size
         font_title = ImageFont.truetype("title.otf", 50)
         font_text = ImageFont.truetype("text.ttf", 36)
 
-        # Specify the position to place the text
         position_title = (50, 50)
         position_text = [70, 140]
 
-        # Specify the color of the text
-        color_title = input('enter title color (R,G,B) ==> ').replace('(', '').replace(')', '').split(',')
-        color_text = input('enter text color (R,G,B) ==> ').replace('(', '').replace(')', '').split(',')
+        color_title = input('enter title color (R,G,B) default(0, 0, 0) ==> ').replace('(', '').replace(')', '').split(',')
+        color_text = input('enter text color (R,G,B) default(0, 0, 0) ==> ').replace('(', '').replace(')', '').split(',')
 
         color_title = color_title if len(color_title) == 3 else (0, 0, 0)
         color_text = color_text if len(color_text) == 3 else (0, 0, 0)
@@ -69,13 +62,11 @@ if __name__ == "__main__":
         color_title = tuple([int(i) for i in color_title])
         color_text = tuple([int(i) for i in color_text])
 
-        # Add the text to the image
         draw.text(position_title, title, font=font_title, fill=color_title)
         for text in lines:
             draw.text(tuple(position_text), text, font=font_text, fill=color_text)
             position_text[1] += 50
 
-        # Save the merged image as a new file
         file_name = f"post{slide}.png"
         image.save(os.path.join('dist',file_name))
         image.close()
