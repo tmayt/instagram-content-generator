@@ -1,4 +1,4 @@
-from main import make_lines,make_bg
+from main import make_lines,make_bg,draw
 import unittest
 import cv2
 
@@ -11,9 +11,18 @@ class TestStringMethods(unittest.TestCase):
         )
 
     def test_make_bg(self):
-        obj1 = cv2.imencode('.jpg', make_bg((255,255,255)))[1].tobytes()
-        obj2 = cv2.imencode('.jpg', cv2.imread('test-template.png'))[1].tobytes()
+        obj1 = cv2.imencode('.png', make_bg((255,255,255)))[1].tobytes()
+        obj2 = cv2.imencode('.png', cv2.imread('test-template.png'))[1].tobytes()
         self.assertEqual(obj1, obj2)
+
+
+    def test_draw(self):
+        fp1 = draw('Title',['line1','line2','line3'],(0,0,0),(0,0,0),'test.png')
+        fp2 = 'test-draw.png'
+        obj1 = cv2.imencode('.png', cv2.imread(fp1))[1].tobytes()
+        obj2 = cv2.imencode('.png', cv2.imread(fp2))[1].tobytes()
+        self.assertEqual(obj1, obj2)
+
 
 if __name__ == '__main__':
     unittest.main()
