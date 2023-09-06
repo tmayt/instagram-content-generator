@@ -58,8 +58,8 @@ if __name__ == "__main__":
 
         title = input("Your Title: ")
         lines = input("Your Text: ")
-        if "\n" in lines:
-            lines = lines.split('\n')
+        if r"\n" in lines:
+            lines = lines.split(r'\n')
         else:
             lines = make_lines(lines)
 
