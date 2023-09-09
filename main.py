@@ -3,6 +3,9 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+from tkinter import colorchooser,messagebox
+import tkinter as tk
+
 
 def make_lines(string):
     result = ""
@@ -15,8 +18,7 @@ def make_lines(string):
     
 def make_bg(color):
     height, width, channel = 1080, 1080, 3
-    red, green, blue = color
-    arr = np.full((height, width, channel), [red, green, blue], dtype=('uint8'))
+    arr = np.full((height, width, channel), list(color), dtype=('uint8'))
     plt.imsave('template.png',arr)
     return cv2.imread('template.png')
 
@@ -41,39 +43,51 @@ def draw(title,lines,color_title,color_text,file_name):
     return fp
 
 if __name__ == "__main__":
-    description = '''
-        Title line ==> 38 chars
-        text line ==> 54 chars
-    '''
-    print(description)
+
+    window = tk.Tk()
+    window.title("PythonExamples.org")
+    window.geometry("500x500")
 
     slide = 1
-    bg_color = input('enter bg color (R,G,B) default(255, 255, 255) ==> ').replace('(', '').replace(')', '').split(',')
-    bg_color = bg_color if len(bg_color) == 3 else (255, 255, 255)
-    bg_color = tuple([int(i) for i in bg_color])
-    make_bg(bg_color)
 
-    while input('continue (y/n)? ') == 'y':
-        print('-'*20)
+    make_bg(colorchooser.askcolor(title ="bg")[0])
+    color_title = colorchooser.askcolor(title ="title")[0]
+    color_text = colorchooser.askcolor(title ="text")[0]
 
-        title = input("Your Title: ")
-        lines = input("Your Text: ")
+    def entered_value():
+        global slide
+        global color_title
+        global color_text
+
+        title = entry1.get("1.0",'end-1c')
+        lines = entry2.get("1.0",'end-1c')
+
         if r"\n" in lines:
             lines = lines.split(r'\n')
         else:
             lines = make_lines(lines)
 
-        color_title = input('enter title color (R,G,B) default(0, 0, 0) ==> ').replace('(', '').replace(')', '').split(',')
-        color_text = input('enter text color (R,G,B) default(0, 0, 0) ==> ').replace('(', '').replace(')', '').split(',')
-
-        color_title = color_title if len(color_title) == 3 else (0, 0, 0)
-        color_text = color_text if len(color_text) == 3 else (0, 0, 0)
-
-        color_title = tuple([int(i) for i in color_title])
-        color_text = tuple([int(i) for i in color_text])
         file_name = f"post{slide}.png"
 
         draw(title,lines,color_title,color_text,file_name)
 
         slide += 1
-        print(f'{file_name} is done.')
+
+        messagebox.showinfo(file_name, 'done!')
+
+    label1 = tk.Label(window, text="Title")
+    label1.pack()
+
+    entry1 = tk.Text(window, height = 1, width = 38)
+    entry1.pack()
+
+    label2 = tk.Label(window, text="Text")
+    label2.pack()
+
+    entry2 = tk.Text(window, height = 19, width = 54)
+    entry2.pack()
+
+    button = tk.Button(window, text="Submit", command=entered_value)
+    button.pack()
+
+    window.mainloop()

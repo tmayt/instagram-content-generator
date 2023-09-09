@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=ICG
+Comment=Instagram Content Generator
+Exec=python /home/tha/GitHub/instagram-content-generator/main.py 
+Icon=/home/tha/GitHub/instagram-content-generator/icon.png
+Terminal=false
+Type=Application
+StartupNotify=false
+Encoding=UTF-8
+Categories=Application;
+
