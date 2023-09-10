@@ -17,6 +17,7 @@ class TestStringMethods(unittest.TestCase):
 
 
     def test_draw(self):
+        make_bg((255,255,255))
         fp1 = draw('Title',['line1','line2','line3'],(0,0,0),(0,0,0),'test.png')
         fp2 = 'test-draw.png'
         obj1 = cv2.imencode('.png', cv2.imread(fp1))[1].tobytes()

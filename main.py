@@ -5,18 +5,24 @@ import matplotlib.pyplot as plt
 import cv2
 from tkinter import colorchooser,messagebox
 import tkinter as tk
+from random import randint
+from time import sleep
+
 
 app_path = __file__[:-7]
-dist_path = os.path.join(os.getcwd(),'Desktop','dist')
+
+dist_path = os.path.join(os.getcwd(),'dist')
 if not os.path.exists(dist_path):
-   os.makedirs(dist_path)
+    dist_path = os.path.join(os.getcwd(),'Desktop','dist')
+    if not os.path.exists(dist_path):
+        os.makedirs(dist_path)
 
 
 def make_lines(string):
     result = ""
     for word in string.split(' '):
         if len(result.split('&&&')[-1]) + len(word) > 54:
-            result += f"&&& {word}"
+            result += f"&&&{word} "
         else:
             result += f'{word} '
     return result.split('&&&')
@@ -46,38 +52,53 @@ def draw(title,lines,color_title,color_text,file_name):
     image.save(fp)
     return fp
 
+def is_ok():
+    image = cv2.imread(os.path.join(app_path,'temp.png'))
+    cv2.imshow('bg',image)
+    cv2.waitKey(5000)
+    cv2.destroyAllWindows()
+    return messagebox.askyesno('ICG', 'ok?')
+
+
+def bg_generator():
+    target = False
+    while (not target):
+        make_bg(colorchooser.askcolor((randint(55,200),randint(55,200),randint(55,200)),title ="bg")[0])
+        color_title = colorchooser.askcolor('#000',title ="title")[0]
+        color_text = colorchooser.askcolor('#000',title ="text")[0]
+        draw('Title',['line1 data for test','line2 data for test','line3 data for test'],color_title,color_text,os.path.join(app_path,'temp.png'))
+        target = is_ok()
+
+    return color_title, color_text
+
+def entered_value():
+    global slide
+    global color_title
+    global color_text
+
+    title = entry1.get("1.0",'end-1c')
+    lines = entry2.get("1.0",'end-1c')
+
+    if "\n" in lines:
+        lines = lines.split('\n')
+
+    else:
+        lines = make_lines(lines)
+
+    file_name = f"post{slide}.png"
+    draw(title,lines,color_title,color_text,file_name)
+    slide += 1
+    messagebox.showinfo(file_name, 'done!')
+
+
 if __name__ == "__main__":
+    
+    color_title, color_text = bg_generator()
+    slide = 1
 
     window = tk.Tk()
     window.title("ICG")
-    window.geometry("500x500")
-
-    slide = 1
-
-    make_bg(colorchooser.askcolor(title ="bg")[0])
-    color_title = colorchooser.askcolor(title ="title")[0]
-    color_text = colorchooser.askcolor(title ="text")[0]
-
-    def entered_value():
-        global slide
-        global color_title
-        global color_text
-
-        title = entry1.get("1.0",'end-1c')
-        lines = entry2.get("1.0",'end-1c')
-
-        if r"\n" in lines:
-            lines = lines.split(r'\n')
-        else:
-            lines = make_lines(lines)
-
-        file_name = f"post{slide}.png"
-
-        draw(title,lines,color_title,color_text,file_name)
-
-        slide += 1
-
-        messagebox.showinfo(file_name, 'done!')
+    window.geometry("700x600")
 
     label1 = tk.Label(window, text="Title")
     label1.pack()
@@ -88,7 +109,7 @@ if __name__ == "__main__":
     label2 = tk.Label(window, text="Text")
     label2.pack()
 
-    entry2 = tk.Text(window, height = 19, width = 54)
+    entry2 = tk.Text(window, height = 19, width = 65)
     entry2.pack()
 
     button = tk.Button(window, text="Submit", command=entered_value)
