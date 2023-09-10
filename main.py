@@ -6,6 +6,11 @@ import cv2
 from tkinter import colorchooser,messagebox
 import tkinter as tk
 
+app_path = __file__[:-7]
+dist_path = os.path.join(os.getcwd(),'Desktop','dist')
+if not os.path.exists(dist_path):
+   os.makedirs(dist_path)
+
 
 def make_lines(string):
     result = ""
@@ -19,16 +24,15 @@ def make_lines(string):
 def make_bg(color):
     height, width, channel = 1080, 1080, 3
     arr = np.full((height, width, channel), list(color), dtype=('uint8'))
-    plt.imsave('template.png',arr)
-    return cv2.imread('template.png')
+    plt.imsave(os.path.join(app_path,'template.png'),arr)
+    return cv2.imread(os.path.join(app_path,'template.png'))
 
 def draw(title,lines,color_title,color_text,file_name):
-    image = Image.open("template.png")
+    image = Image.open(os.path.join(app_path,'template.png'))
 
     draw = ImageDraw.Draw(image)
-
-    font_title = ImageFont.truetype("title.otf", 50)
-    font_text = ImageFont.truetype("text.ttf", 36)
+    font_title = ImageFont.truetype(os.path.join(app_path,'title.otf'), 50)
+    font_text = ImageFont.truetype(os.path.join(app_path,'text.ttf'), 36)
 
     position_title = (50, 50)
     position_text = [70, 140]
@@ -38,14 +42,14 @@ def draw(title,lines,color_title,color_text,file_name):
         draw.text(tuple(position_text), text, font=font_text, fill=color_text)
         position_text[1] += 50
 
-    fp = os.path.join('dist',file_name)
+    fp = os.path.join(dist_path,file_name)
     image.save(fp)
     return fp
 
 if __name__ == "__main__":
 
     window = tk.Tk()
-    window.title("PythonExamples.org")
+    window.title("ICG")
     window.geometry("500x500")
 
     slide = 1
