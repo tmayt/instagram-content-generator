@@ -8,20 +8,17 @@ import tkinter as tk
 from random import randint
 from time import sleep
 
-
 app_path = __file__[:-7]
-
 dist_path = os.path.join(os.getcwd(),'dist')
 if not os.path.exists(dist_path):
     dist_path = os.path.join(os.getcwd(),'Desktop','dist')
     if not os.path.exists(dist_path):
         os.makedirs(dist_path)
 
-
 def make_lines(string):
     result = ""
     for word in string.split(' '):
-        if len(result.split('&&&')[-1]) + len(word) > 54:
+        if len(result.split('&&&')[-1]) + len(word) > 60:
             result += f"&&&{word} "
         else:
             result += f'{word} '
@@ -33,6 +30,13 @@ def make_bg(color):
     plt.imsave(os.path.join(app_path,'template.png'),arr)
     return cv2.imread(os.path.join(app_path,'template.png'))
 
+def clean_title(title):
+    res = ''
+    for word in title.split(' '):
+        if len(res) + len(word) < 38:
+            res += f'{word} '
+    return res
+
 def draw(title,lines,color_title,color_text,file_name):
     image = Image.open(os.path.join(app_path,'template.png'))
 
@@ -43,7 +47,7 @@ def draw(title,lines,color_title,color_text,file_name):
     position_title = (50, 50)
     position_text = [70, 140]
 
-    draw.text(position_title, title, font=font_title, fill=color_title)
+    draw.text(position_title, clean_title(title), font=font_title, fill=color_title)
     for text in lines:
         draw.text(tuple(position_text), text, font=font_text, fill=color_text)
         position_text[1] += 50
@@ -52,13 +56,13 @@ def draw(title,lines,color_title,color_text,file_name):
     image.save(fp)
     return fp
 
-def is_ok():
-    image = cv2.imread(os.path.join(app_path,'temp.png'))
+def is_ok(fp,wait):
+    image = cv2.imread(os.path.join(app_path,fp))
+    image = cv2.resize(image, (700, 700))
     cv2.imshow('bg',image)
-    cv2.waitKey(5000)
+    cv2.waitKey(wait)
     cv2.destroyAllWindows()
     return messagebox.askyesno('ICG', 'ok?')
-
 
 def bg_generator():
     target = False
@@ -67,7 +71,7 @@ def bg_generator():
         color_title = colorchooser.askcolor('#000',title ="title")[0]
         color_text = colorchooser.askcolor('#000',title ="text")[0]
         draw('Title',['line1 data for test','line2 data for test','line3 data for test'],color_title,color_text,os.path.join(app_path,'temp.png'))
-        target = is_ok()
+        target = is_ok('temp.png',3000)
 
     return color_title, color_text
 
@@ -77,19 +81,27 @@ def entered_value():
     global color_text
 
     title = entry1.get("1.0",'end-1c')
-    lines = entry2.get("1.0",'end-1c')
+    text = entry2.get("1.0",'end-1c')
 
-    if "\n" in lines:
-        lines = lines.split('\n')
+    if "\n" in text:
+        lines_n = text.split('\n')
+        lines = []
+        for line in lines_n:
+            temp = make_lines(line)
+            lines += temp
 
     else:
-        lines = make_lines(lines)
+        lines = make_lines(text)
 
     file_name = f"post{slide}.png"
     draw(title,lines,color_title,color_text,file_name)
-    slide += 1
-    messagebox.showinfo(file_name, 'done!')
-
+    fp = os.path.join(dist_path,file_name)
+    target = is_ok(fp,10000)
+    if target:
+        slide += 1
+        messagebox.showinfo(file_name, 'done!')
+    else:
+        os.remove(fp)
 
 if __name__ == "__main__":
     
